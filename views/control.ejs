@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <% include ./partials/head %>
+</head>
+
+<body>
+
+<header>
+    <% include ./partials/header %>
+</header>
+<div class="container">
+    <main>
+        <div id="console" style="padding: 20px; background: black;">
+
+        </div>
+
+        <div id="controls" style="float: right">
+            <br>
+            <a href="/terminate/<%= id %>" class="btn btn-danger">Terminate</a>
+        </div>
+
+        <div style="clear: both"></div>
+        <script>
+          var terminal = new Terminal();
+          terminal.open(document.getElementById('console'));
+
+          terminal.on('key', function (key, ev) {
+            var printable = (
+              !ev.altKey && !ev.altGraphKey && !ev.ctrlKey && !ev.metaKey
+            );
+
+            var xhr = new XMLHttpRequest();
+            if (ev.keyCode == 13) {
+              xhr.open("POST", '/prompt/<%= id %>', true);
+              xhr.setRequestHeader("Content-type", "application/json");
+              xhr.send(JSON.stringify({message: '\n'}));
+            } else if (ev.keyCode == 8) {
+              xhr.open("POST", '/prompt/<%= id %>', true);
+              xhr.setRequestHeader("Content-type", "application/json");
+              xhr.send(JSON.stringify({message: '\b'}));
+            } else if (printable) {
+              xhr.open("POST", '/prompt/<%= id %>', true);
+              xhr.setRequestHeader("Content-type", "application/json");
+              xhr.send(JSON.stringify({message: key}));
+            } else {
+              xhr.open("POST", '/keyboard/<%= id %>', true);
+              xhr.setRequestHeader("Content-type", "application/json");
+              xhr.send(JSON.stringify({ctrl: ev.ctrlKey, key: ev.key, alt: ev.altKey}));
+            }
+          });
+
+          var time = 0;
+          setInterval(function () {
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", '/track/<%= id %>/' + time, true);
+            xhr.setRequestHeader("Content-type", "application/json");
+            xhr.onreadystatechange = function () {
+              if (xhr.readyState == 4) {
+                var data = JSON.parse(xhr.response);
+                data.forEach(function (data) {
+                  time = data.time;
+                  if (data.pipe == 'stdout') {
+                    terminal.write(data.data);
+                  } else if (data.pipe == 'stderr') {
+                    terminal.write(data.data);
+                  } else if (data.pipe == 'exit') {
+                    terminal.write('ssh has been terminated!');
+                  }
+                })
+              }
+            }
+            xhr.send(null);
+          }, 1000);
+        </script>
+    </main>
+
+    <footer>
+        <% include ./partials/footer %>
+    </footer>
+</div>
+</body>
+</html>

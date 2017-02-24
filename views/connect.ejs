@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <% include ./partials/head %>
+</head>
+
+<body>
+
+<header>
+    <% include ./partials/header %>
+</header>
+<div class="container">
+    <main>
+        <div class="list-group">
+            <% servers.forEach(function(server) { %>
+            <a href="/connect/<%=server.id%>" class="list-group-item">
+                <%=server.name%> at <%=server.login%>@<%=server.ip%>
+            </a>
+            <% }); %>
+        </div>
+    </main>
+
+    <footer>
+        <% include ./partials/footer %>
+    </footer>
+</div>
+</body>
+</html>

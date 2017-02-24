@@ -1,0 +1,19 @@
+<nav class="navbar navbar-default dark" role="navigation">
+    <div class="container">
+
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">
+                Basic SSH
+            </a>
+        </div>
+
+        <ul class="nav navbar-nav">
+            <li<% if(page == 'index') { %> class="active" <% } %>><a href="/">Dashboard</a></li>
+            <li<% if(page == 'connect') { %> class="active" <% } %>><a href="/connect">Connect</a></li>
+            <% userProcess.forEach(function (process) { %>
+            <li<% if(page == process.id) { %> class="active" <% } %>><a href="/control/<%=process.id%>"><%=process.server.login%>@<%=process.server.ip%>(<%=process.id.substr(0, 6)%>)</a></li>
+            <% }) %>
+        </ul>
+
+    </div>
+</nav>

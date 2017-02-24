@@ -1,0 +1,21 @@
+{
+  "port": 12345,
+  "users": [
+    {
+      "login": "<login name>",
+      "password": "<login password>"
+    }
+  ],
+
+  "servers": [
+    {
+      "name": "<server name>",
+      "ip": "<server ip>",
+      "login": "<user name>",
+      "password": "<password>",
+      "responsible": [
+        "<who can use this>"
+      ]
+    }
+  ]
+}
