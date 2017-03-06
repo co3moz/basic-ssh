@@ -1,5 +1,5 @@
 module.exports = function (userProcess, servers, app) {
-  app.get('/track/:id/:time', function (req, res) {
+  app.post('/sync/:id/:time', function (req, res) {
     var user = req.auth.user;
 
     var index;
@@ -26,7 +26,36 @@ module.exports = function (userProcess, servers, app) {
         return data.time > req.params.time
       });
     }
+	
+    try {
+		if (process.alive) {
+			if(req.body.message != "") {
+				process.stream.stdin.write(req.body.message);
+			}
+		}
+	} catch(e) {
+		pushData(process, 'stderr', 'ERROR:' + e.stack);
+	}
 
     res.send(data);
   });
 };
+
+function pushData(process, pipe, data) {
+  var last = process.data[process.data.length - 1];
+
+  if (last && (last.time == Date.now())) {
+    last.data += data;
+  } else {
+    process.data.push({
+      time: Date.now(),
+      pipe: pipe,
+      data: data
+    });
+
+
+    if (process.data.length > 200) {
+      process.data.shift();
+    }
+  }
+}

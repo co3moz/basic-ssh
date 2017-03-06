@@ -46,6 +46,7 @@ Edit config file in config directory. Example config;
 ```json
 {
   "port": 12345,
+  "speed": 1000,
   "users": [
     {
       "login": "admin",

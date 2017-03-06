@@ -23,7 +23,8 @@ module.exports = function (userProcess, servers, app) {
     var process = {
       server: server,
       id: md5(Math.random().toString() + Date.now().toString()),
-      data: []
+      data: [],
+      alive: true
     };
 
     var s = new Client();
@@ -34,8 +35,8 @@ module.exports = function (userProcess, servers, app) {
       password: server.password
     });
 
-    s.on('error', function (error) {
-      console.log(error);
+    s.on('error', function (e) {
+      pushData(process, 'stderr', 'ERROR:' + e.stack);
     });
 
     s.on('end', function () {

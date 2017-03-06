@@ -11,7 +11,7 @@
             <li<% if(page == 'index') { %> class="active" <% } %>><a href="/">Dashboard</a></li>
             <li<% if(page == 'connect') { %> class="active" <% } %>><a href="/connect">Connect</a></li>
             <% userProcess.forEach(function (process) { %>
-            <li<% if(page == process.id) { %> class="active" <% } %>><a href="/control/<%=process.id%>"><%=process.server.login%>@<%=process.server.ip%>(<%=process.id.substr(0, 6)%>)</a></li>
+            <li<% if(page == process.id) { %> class="active" <% } %>><a href="/control/<%=process.id%>"><% if(process.alive) { %><span class="glyphicon glyphicon-play" style="color: lime"></span> <% } else { %><span class="glyphicon glyphicon-stop red" style="color: red"></span> <%}%><%=process.server.login%>@<%=process.server.ip%>(<%=process.id.substr(0, 6)%>)</a></li>
             <% }) %>
         </ul>
 

@@ -1,5 +1,5 @@
 module.exports = function (userProcess, servers, app) {
-  app.post('/keyboard/:id', function (req, res) {
+  app.get('/clear/:id', function (req, res) {
     var user = req.auth.user;
 
     var index;
@@ -38,12 +38,8 @@ module.exports = function (userProcess, servers, app) {
       });
     }
 
-    var key = req.body;
-    if(key.ctrl) {
-      if(key.key == 'c') {
-        process.stream.stdin.write('\x03');
-      }
-    }
-    res.send('ok');
+	process.stream.stdin.write('\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\bclear\n');
+    process.data = [];
+	res.redirect('/control/' + process.id);
   });
 };

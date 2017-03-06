@@ -1,3 +1,5 @@
+var config = require('config');
+
 module.exports = function (userProcess, servers, app) {
   app.get('/control/:id', function (req, res) {
     var user = req.auth.user;
@@ -19,7 +21,8 @@ module.exports = function (userProcess, servers, app) {
       user: user,
       userProcess: userProcess[user],
       id: req.params.id,
-      page: req.params.id
+      page: req.params.id,
+      speed: config.get('speed')
     });
   });
 };

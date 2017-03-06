@@ -17,43 +17,38 @@
 
         <div id="controls" style="float: right">
             <br>
+            <a href="#" class="btn btn-warning" onclick="terminalPrompt()">Prompt</a>
+            <a href="/clear/<%= id %>" class="btn btn-danger">clear</a>
             <a href="/terminate/<%= id %>" class="btn btn-danger">Terminate</a>
         </div>
+        <div id="willSend">
 
+        </div>
         <div style="clear: both"></div>
         <script>
+          var time = 0;
+          var willSend = [];
           var terminal = new Terminal();
+          var docWillSend = document.getElementById('willSend');
           terminal.open(document.getElementById('console'));
 
-          terminal.on('key', function (key, ev) {
-            var printable = (
-              !ev.altKey && !ev.altGraphKey && !ev.ctrlKey && !ev.metaKey
-            );
+          function t(data) {
+            willSend.push(data);
+            docWillSend.innerText = willSend.join(" ");
+          }
 
-            var xhr = new XMLHttpRequest();
-            if (ev.keyCode == 13) {
-              xhr.open("POST", '/prompt/<%= id %>', true);
-              xhr.setRequestHeader("Content-type", "application/json");
-              xhr.send(JSON.stringify({message: '\n'}));
-            } else if (ev.keyCode == 8) {
-              xhr.open("POST", '/prompt/<%= id %>', true);
-              xhr.setRequestHeader("Content-type", "application/json");
-              xhr.send(JSON.stringify({message: '\b'}));
-            } else if (printable) {
-              xhr.open("POST", '/prompt/<%= id %>', true);
-              xhr.setRequestHeader("Content-type", "application/json");
-              xhr.send(JSON.stringify({message: key}));
-            } else {
-              xhr.open("POST", '/keyboard/<%= id %>', true);
-              xhr.setRequestHeader("Content-type", "application/json");
-              xhr.send(JSON.stringify({ctrl: ev.ctrlKey, key: ev.key, alt: ev.altKey}));
+          function r(data) {
+            return t(data + '\n');
+          }
+
+
+          var send = false;
+          function update() {
+            if (send == true) {
+              return;
             }
-          });
-
-          var time = 0;
-          setInterval(function () {
             var xhr = new XMLHttpRequest();
-            xhr.open("GET", '/track/<%= id %>/' + time, true);
+            xhr.open("POST", '/sync/<%= id %>/' + time, true);
             xhr.setRequestHeader("Content-type", "application/json");
             xhr.onreadystatechange = function () {
               if (xhr.readyState == 4) {
@@ -67,11 +62,32 @@
                   } else if (data.pipe == 'exit') {
                     terminal.write('ssh has been terminated!');
                   }
-                })
+                });
+                send = false;
+                docWillSend.innerText = "";
               }
             }
-            xhr.send(null);
-          }, 1000);
+            xhr.send(JSON.stringify({message: willSend.join("")}));
+            willSend = [];
+            send = true;
+          }
+
+          console.log('use t function to send data ex: t(\'echo hi\\n\')');
+          console.log('use r function to send data with \\n ex: r(\'echo hi\')');
+
+          function terminalPrompt() {
+            var p = prompt();
+            if (p != null && p != "") {
+              t(p + "\n");
+            }
+          }
+
+          terminal.on('key', function (key, ev) {
+            t(key);
+          });
+
+          setInterval(update, 1000);
+          update();
         </script>
     </main>
 

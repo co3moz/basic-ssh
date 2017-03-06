@@ -51,10 +51,9 @@ servers.filterServers = function (user) {
   require('./routes/connect'),
   require('./routes/connect_id'),
   require('./routes/control'),
-  require('./routes/prompt'),
   require('./routes/terminate'),
-  require('./routes/track'),
-  require('./routes/keyboard')
+  require('./routes/sync'),
+  require('./routes/clear')
 ]).forEach(function (route) {
   route(userProcess, servers, app);
 });

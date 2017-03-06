@@ -1,5 +1,6 @@
 {
   "port": 12345,
+  "speed": 1000,
   "users": [
     {
       "login": "<login name>",
